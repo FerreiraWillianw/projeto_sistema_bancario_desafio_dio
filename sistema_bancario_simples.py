@@ -1,1 +1,149 @@
-{"cells":[{"cell_type":"code","source":["import textwrap\n","\n","def menu():\n","    menu = \"\"\"\\n\n","    ——————————————— MENU ———————————————\n","    [d]\\tDepositar\n","    [s]\\tSacar\n","    [e]\\tExtrato\n","    [nc]\\tNova conta\n","    [lc]\\tListar contas\n","    [nu]\\tNovo usuário\n","    [q]\\tSair\n","    → \"\"\"\n","    return input(textwrap.dedent(menu))\n","\n","def depositar(saldo, valor, extrato, /):\n","    if valor > 0:\n","        saldo += valor\n","        extrato += f\"Depósito:\\tR$ {valor:.2f}\\n\"\n","        print(\"\\n Depósito realizado com sucesso!\")\n","    else:\n","        print(\"\\n@@@ Operação falhou! O valor informado é inválido! @@@\")\n","    return saldo, extrato\n","\n","def sacar(*, saldo, valor, extrato, limite, numero_saques, limite_saques):\n","    excedeu_saldo = valor > saldo\n","    excedeu_limite = valor > limite\n","    excedeu_saques = numero_saques >= limite_saques\n","\n","    if excedeu_saldo:\n","        print(\"\\n@@@ Operação falhou! Você não tem saldo suficiente. @@@\")\n","    elif excedeu_limite:\n","        print(\"\\n@@@ Operação falhou! O valor do saque excede o limite. @@@\")\n","    elif excedeu_saques:\n","        print(\"\\n@@@ Operação falhou! Número máximo de saques excedido. @@@\")\n","    elif valor > 0:\n","        saldo -= valor\n","        extrato += f\"Saque:\\t\\tR$ {valor:.2f}\\n\"\n","        numero_saques += 1\n","        print(\"\\n Saque realizado com sucesso!\")\n","    else:\n","        print(\"\\n@@@ Operação falhou! O valor informado é inválido! @@@\")\n","\n","    return saldo, extrato, numero_saques\n","\n","def exibir_extrato(saldo, /, *, extrato):\n","    print(\"\\n=============== EXTRATO ===============\")\n","    print(\"Não foram realizadas movimentações.\" if not extrato else extrato)\n","    print(f\"\\nSaldo:\\t\\tR$ {saldo:.2f}\")\n","    print(\"=======================================\")\n","\n","def criar_usuario(usuarios):\n","    cpf = input(\"Informe o CPF (somente números): \")\n","    usuario = filtrar_usuarios(cpf, usuarios)\n","\n","    if usuario:\n","        print(\"\\n@@@ Já existe usuário com esse CPF! @@@\")\n","        return\n","\n","    nome = input(\"Informe o nome completo: \")\n","    data_nascimento = input(\"Informe a data de nascimento (dd-mm-aaaa): \")\n","    endereco = input(\"Informe o endereço (logradouro, nro - bairro - cidade/sigla estado): \")\n","\n","    usuarios.append({\"nome\": nome, \"data_nascimento\": data_nascimento, \"cpf\": cpf, \"endereco\": endereco})\n","\n","    print(\"=== Usuário criado com sucesso! ===\")\n","\n","def filtrar_usuarios(cpf, usuarios):\n","    usuarios_filtrados = [usuario for usuario in usuarios if usuario[\"cpf\"] == cpf]\n","    return usuarios_filtrados[0] if usuarios_filtrados else None\n","\n","def criar_conta(agencia, numero_conta, usuarios):\n","    cpf = input(\"Informe o CPF do usuário: \")\n","    usuario = filtrar_usuarios(cpf, usuarios)\n","\n","    if usuario:\n","        print(\"\\n=== Conta criada com sucesso! ===\")\n","        return {\"agencia\": agencia, \"numero_conta\": numero_conta, \"usuario\": usuario}\n","\n","    print(\"\\n@@@ Usuário não encontrado, fluxo de criação de conta encerrado! @@@\")\n","    return None # Garantir que retorne None se falhar\n","\n","def listar_contas(contas):\n","    print(\"\\n=============== LISTA DE CONTAS ===============\")\n","    if not contas:\n","        print(\"Nenhuma conta cadastrada.\")\n","        print(\"===============================================\")\n","        return\n","\n","    for conta in contas:\n","        linha = f\"\"\"\\\n","            Agência:\\t{conta['agencia']}\n","            C/C:\\t\\t{conta['numero_conta']}\n","            Titular:\\t{conta['usuario']['nome']}\n","        \"\"\"\n","        print(textwrap.dedent(linha))\n","        print(\"—\" * 30) # Linha divisória\n","    print(\"===============================================\")\n","\n","def main():\n","    LIMITE_SAQUES = 3\n","    AGENCIA = '0001'\n","\n","    saldo = 0\n","    limite = 500\n","    extrato = ''\n","    numero_saques = 0\n","    usuarios = []\n","    contas = []\n","\n","    while True:\n","        opcao = menu()\n","\n","        if opcao == 'd':\n","            # ... código de depósito ...\n","            valor = float(input('Informe o valor do depósito: '))\n","            saldo, extrato = depositar(saldo, valor, extrato)\n","\n","        elif opcao =='s':\n","            valor = float(input('Informe o valor do saque: '))\n","\n","            # CORREÇÃO 2 e 5: Esperar três retornos (saldo, extrato, numero_saques)\n","            saldo, extrato, numero_saques = sacar(\n","                saldo=saldo,\n","                valor=valor,\n","                extrato=extrato,\n","                limite=limite,\n","                numero_saques=numero_saques,\n","                limite_saques=LIMITE_SAQUES,\n","            )\n","        elif opcao == 'e':\n","            exibir_extrato(saldo, extrato=extrato)\n","        elif opcao == 'nu':\n","            criar_usuario(usuarios)\n","        elif opcao =='nc':\n","            numero_conta = len(contas) + 1\n","            conta = criar_conta(AGENCIA, numero_conta, usuarios)\n","\n","            if conta:\n","                contas.append(conta)\n","            # CORREÇÃO 6: Remover o bloco 'if conta:' duplicado\n","\n","        elif opcao == 'lc':\n","            listar_contas(contas)\n","        elif opcao == 'q':\n","            break\n","\n","if __name__ == '__main__':\n","    main()"],"metadata":{"id":"Mx9SSauvbVZu","executionInfo":{"status":"error","timestamp":1761654963881,"user_tz":180,"elapsed":63791,"user":{"displayName":"","userId":""}},"outputId":"1a27a02f-08c4-4a2f-bdfe-3761f6ecaa9b","colab":{"base_uri":"https://localhost:8080/","height":1676}},"execution_count":null,"outputs":[{"output_type":"stream","name":"stdout","text":["\n","\n","——————————————— MENU ———————————————\n","[d]\tDepositar\n","[s]\tSacar\n","[e]\tExtrato\n","[nc]\tNova conta\n","[lc]\tListar contas\n","[nu]\tNovo usuário\n","[q]\tSair\n","→ nc\n","Informe o CPF do usuário: 15235242785\n","\n","@@@ Usuário não encontrado, fluxo de criação de conta encerrado! @@@\n","\n","\n","——————————————— MENU ———————————————\n","[d]\tDepositar\n","[s]\tSacar\n","[e]\tExtrato\n","[nc]\tNova conta\n","[lc]\tListar contas\n","[nu]\tNovo usuário\n","[q]\tSair\n","→ nu\n","Informe o CPF (somente números): 15235242785\n","Informe o nome completo: Willian Ferreira\n","Informe a data de nascimento (dd-mm-aaaa): 27-12-1997\n","Informe o endereço (logradouro, nro - bairro - cidade/sigla estado): Rua X\n","=== Usuário criado com sucesso! ===\n","\n","\n","——————————————— MENU ———————————————\n","[d]\tDepositar\n","[s]\tSacar\n","[e]\tExtrato\n","[nc]\tNova conta\n","[lc]\tListar contas\n","[nu]\tNovo usuário\n","[q]\tSair\n","→ lc\n","\n","=============== LISTA DE CONTAS ===============\n","Nenhuma conta cadastrada.\n","===============================================\n","\n","\n","——————————————— MENU ———————————————\n","[d]\tDepositar\n","[s]\tSacar\n","[e]\tExtrato\n","[nc]\tNova conta\n","[lc]\tListar contas\n","[nu]\tNovo usuário\n","[q]\tSair\n","→ nc\n","Informe o CPF do usuário: 15235242785\n","\n","=== Conta criada com sucesso! ===\n","\n","\n","——————————————— MENU ———————————————\n","[d]\tDepositar\n","[s]\tSacar\n","[e]\tExtrato\n","[nc]\tNova conta\n","[lc]\tListar contas\n","[nu]\tNovo usuário\n","[q]\tSair\n","→ lc\n","\n","=============== LISTA DE CONTAS ===============\n","Agência:\t0001\n","C/C:\t\t1\n","Titular:\tWillian Ferreira\n","\n","——————————————————————————————\n","===============================================\n"]},{"output_type":"error","ename":"KeyboardInterrupt","evalue":"Interrupted by user","traceback":["\u001b[0;31m---------------------------------------------------------------------------\u001b[0m","\u001b[0;31mKeyboardInterrupt\u001b[0m                         Traceback (most recent call last)","\u001b[0;32m/tmp/ipython-input-3718325495.py\u001b[0m in \u001b[0;36m<cell line: 0>\u001b[0;34m()\u001b[0m\n\u001b[1;32m    152\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    153\u001b[0m \u001b[0;32mif\u001b[0m \u001b[0m__name__\u001b[0m \u001b[0;34m==\u001b[0m \u001b[0;34m'__main__'\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 154\u001b[0;31m     \u001b[0mmain\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m","\u001b[0;32m/tmp/ipython-input-3718325495.py\u001b[0m in \u001b[0;36mmain\u001b[0;34m()\u001b[0m\n\u001b[1;32m    115\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    116\u001b[0m     \u001b[0;32mwhile\u001b[0m \u001b[0;32mTrue\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 117\u001b[0;31m         \u001b[0mopcao\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mmenu\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    118\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    119\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mopcao\u001b[0m \u001b[0;34m==\u001b[0m \u001b[0;34m'd'\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n","\u001b[0;32m/tmp/ipython-input-3718325495.py\u001b[0m in \u001b[0;36mmenu\u001b[0;34m()\u001b[0m\n\u001b[1;32m     12\u001b[0m     \u001b[0;34m[\u001b[0m\u001b[0mq\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;31m\\\u001b[0m\u001b[0mtSair\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     13\u001b[0m     → \"\"\"\n\u001b[0;32m---> 14\u001b[0;31m     \u001b[0;32mreturn\u001b[0m \u001b[0minput\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtextwrap\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mdedent\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mmenu\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     15\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     16\u001b[0m \u001b[0;32mdef\u001b[0m \u001b[0mdepositar\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0msaldo\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mvalor\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mextrato\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m/\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n","\u001b[0;32m/usr/local/lib/python3.12/dist-packages/ipykernel/kernelbase.py\u001b[0m in \u001b[0;36mraw_input\u001b[0;34m(self, prompt)\u001b[0m\n\u001b[1;32m   1175\u001b[0m                 \u001b[0;34m\"raw_input was called, but this frontend does not support input requests.\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1176\u001b[0m             )\n\u001b[0;32m-> 1177\u001b[0;31m         return self._input_request(\n\u001b[0m\u001b[1;32m   1178\u001b[0m             \u001b[0mstr\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mprompt\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1179\u001b[0m             \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_parent_ident\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"shell\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n","\u001b[0;32m/usr/local/lib/python3.12/dist-packages/ipykernel/kernelbase.py\u001b[0m in \u001b[0;36m_input_request\u001b[0;34m(self, prompt, ident, parent, password)\u001b[0m\n\u001b[1;32m   1217\u001b[0m             \u001b[0;32mexcept\u001b[0m \u001b[0mKeyboardInterrupt\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1218\u001b[0m                 \u001b[0;31m# re-raise KeyboardInterrupt, to truncate traceback\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1219\u001b[0;31m                 \u001b[0;32mraise\u001b[0m \u001b[0mKeyboardInterrupt\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Interrupted by user\"\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m   1220\u001b[0m             \u001b[0;32mexcept\u001b[0m \u001b[0mException\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1221\u001b[0m                 \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mlog\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mwarning\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Invalid Message:\"\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mexc_info\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mTrue\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n","\u001b[0;31mKeyboardInterrupt\u001b[0m: Interrupted by user"]}]}],"metadata":{"colab":{"provenance":[{"file_id":"/v2/external/notebooks/intro.ipynb","timestamp":1761656542219}]},"kernelspec":{"display_name":"Python 3","name":"python3"}},"nbformat":4,"nbformat_minor":0}
+import textwrap
+
+def menu():
+    menu = """\n
+    ——————————————— MENU ———————————————
+    [d]\tDepositar
+    [s]\tSacar
+    [e]\tExtrato
+    [nc]\tNova conta
+    [lc]\tListar contas
+    [nu]\tNovo usuário
+    [q]\tSair
+    → """
+    return input(textwrap.dedent(menu))
+
+def depositar(saldo, valor, extrato, /):
+    if valor > 0:
+        saldo += valor
+        extrato += f"Depósito:\tR$ {valor:.2f}\n"
+        print("\n Depósito realizado com sucesso!")
+    else:
+        print("\n@@@ Operação falhou! O valor informado é inválido! @@@")
+    return saldo, extrato
+
+def sacar(*, saldo, valor, extrato, limite, numero_saques, limite_saques):
+    excedeu_saldo = valor > saldo
+    excedeu_limite = valor > limite
+    excedeu_saques = numero_saques >= limite_saques
+
+    if excedeu_saldo:
+        print("\n@@@ Operação falhou! Você não tem saldo suficiente. @@@")
+    elif excedeu_limite:
+        print("\n@@@ Operação falhou! O valor do saque excede o limite. @@@")
+    elif excedeu_saques:
+        print("\n@@@ Operação falhou! Número máximo de saques excedido. @@@")
+    elif valor > 0:
+        saldo -= valor
+        extrato += f"Saque:\t\tR$ {valor:.2f}\n"
+        numero_saques += 1
+        print("\n Saque realizado com sucesso!")
+    else:
+        print("\n@@@ Operação falhou! O valor informado é inválido! @@@")
+
+    return saldo, extrato, numero_saques
+
+def exibir_extrato(saldo, /, *, extrato):
+    print("\n=============== EXTRATO ===============")
+    print("Não foram realizadas movimentações." if not extrato else extrato)
+    print(f"\nSaldo:\t\tR$ {saldo:.2f}")
+    print("=======================================")
+
+def criar_usuario(usuarios):
+    cpf = input("Informe o CPF (somente números): ")
+    usuario = filtrar_usuarios(cpf, usuarios)
+
+    if usuario:
+        print("\n@@@ Já existe usuário com esse CPF! @@@")
+        return
+    
+    nome = input("Informe o nome completo: ")
+    data_nascimento = input("Informe a data de nascimento (dd-mm-aaaa): ")
+    endereco = input("Informe o endereço (logradouro, nro - bairro - cidade/sigla estado): ")
+
+    usuarios.append({"nome": nome, "data_nascimento": data_nascimento, "cpf": cpf, "endereco": endereco})
+
+    print("=== Usuário criado com sucesso! ===")
+
+def filtrar_usuarios(cpf, usuarios):
+    usuarios_filtrados = [usuario for usuario in usuarios if usuario["cpf"] == cpf]
+    return usuarios_filtrados[0] if usuarios_filtrados else None
+
+def criar_conta(agencia, numero_conta, usuarios):
+    cpf = input("Informe o CPF do usuário: ")
+    usuario = filtrar_usuarios(cpf, usuarios)
+
+    if usuario:
+        print("\n=== Conta criada com sucesso! ===")
+        return {"agencia": agencia, "numero_conta": numero_conta, "usuario": usuario}
+    
+    print("\n@@@ Usuário não encontrado, fluxo de criação de conta encerrado! @@@")
+    return None # Garantir que retorne None se falhar
+
+def listar_contas(contas):
+    print("\n=============== LISTA DE CONTAS ===============")
+    if not contas:
+        print("Nenhuma conta cadastrada.")
+        print("===============================================")
+        return
+        
+    for conta in contas:
+        linha = f"""\
+            Agência:\t{conta['agencia']}
+            C/C:\t\t{conta['numero_conta']}
+            Titular:\t{conta['usuario']['nome']}
+        """
+        print(textwrap.dedent(linha))
+        print("—" * 30) # Linha divisória
+    print("===============================================")
+
+def main():
+    LIMITE_SAQUES = 3
+    AGENCIA = '0001'
+
+    saldo = 0
+    limite = 500
+    extrato = ''
+    numero_saques = 0
+    usuarios = []
+    contas = []
+
+    while True:
+        opcao = menu()
+
+        if opcao == 'd':
+            # ... código de depósito ...
+            valor = float(input('Informe o valor do depósito: '))
+            saldo, extrato = depositar(saldo, valor, extrato)
+
+        elif opcao =='s':
+            valor = float(input('Informe o valor do saque: '))
+
+            # CORREÇÃO 2 e 5: Esperar três retornos (saldo, extrato, numero_saques)
+            saldo, extrato, numero_saques = sacar(
+                saldo=saldo,
+                valor=valor,
+                extrato=extrato,
+                limite=limite,
+                numero_saques=numero_saques,
+                limite_saques=LIMITE_SAQUES,
+            )
+        elif opcao == 'e':
+            exibir_extrato(saldo, extrato=extrato)
+        elif opcao == 'nu':
+            criar_usuario(usuarios)
+        elif opcao =='nc':
+            numero_conta = len(contas) + 1
+            conta = criar_conta(AGENCIA, numero_conta, usuarios)
+
+            if conta:
+                contas.append(conta)
+            # CORREÇÃO 6: Remover o bloco 'if conta:' duplicado
+            
+        elif opcao == 'lc':
+            listar_contas(contas)
+        elif opcao == 'q':
+            break
+        
+if __name__ == '__main__':
+    main()
