@@ -28,15 +28,23 @@ Este código explora o uso de parâmetros de função para criar interfaces mais
 * **Argumentos Posicionais-Only (`/`):** A função `depositar(saldo, valor, extrato, /)` exige que os argumentos sejam passados **apenas pela posição**, garantindo uma chamada direta e concisa.
 * **Argumentos Nomeados-Only (`*`):** A função `sacar(*, saldo, valor, ...)` exige que os argumentos subsequentes sejam passados **por palavra-chave** (`saldo=x`, `valor=y`), melhorando a clareza e prevenindo erros de ordem em funções com muitos parâmetros.
 
-### Como Rodar o Projeto
+# 🔄️ Atualização do projeto para v2 'sistema_bancario_complexo.py'
 
-1.  Clone este repositório para sua máquina local.
-2.  Certifique-se de ter o Python 3 instalado.
-3.  Execute o arquivo principal no seu terminal:
+# 🏦 Sistema Bancário em Python (v2 - Orientação a Objetos Básica)
 
-    ```bash
-    sistema_bancario_simples.py
-    ```
+Este projeto é uma aplicação de linha de comando que simula operações bancárias básicas, desenvolvida como exercício de consolidação dos princípios da **Programação Orientada a Objetos (POO)** em Python.
+
+A principal mudança desta versão é a migração do modelo puramente procedural (variáveis soltas) para o modelo de classes, organizando o código e centralizando a lógica de negócio.
+
+## ✨ Conceitos de POO Aplicados
+
+| Conceito | Aplicação no Código | Detalhe |
+| :--- | :--- | :--- |
+| **Classes e Objetos** | `Cliente` e `ContaCorrente` | O usuário e a conta agora são **objetos** que contêm seus próprios dados (atributos) e comportamentos (métodos). |
+| **Atributos Públicos** | `self.saldo`, `self.cpf` | Simplificação inicial: os dados são acessados diretamente (sem `@property` ou `_`). |
+| **Associação** | `self.cliente` na classe `ContaCorrente` | A conta guarda uma **referência** ao objeto `Cliente`, permitindo acessar o nome do titular (ex: `conta.cliente.nome`). |
+| **Comportamento Centralizado** | Métodos `depositar()` e `sacar()` | Toda a lógica de verificação de limites e atualização do saldo está **dentro** da classe `ContaCorrente`. |
+
 4.  Interaja com o menu no console.
 
 ---
